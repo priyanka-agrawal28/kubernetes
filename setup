@@ -1,0 +1,38 @@
+KUBERNETES SETUP USING KUBEADM
+
+->Install kubeadm
+
+$ sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+$ cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+> deb https://apt.kubernetes.io/ kubernetes-xenial main
+> EOF
+$ sudo apt-get update
+$ sudo apt-get install -y kubelet kubeadm kubectl
+$ sudo apt-mark hold kubelet kubeadm kubectl
+
+->Create a cluster
+
+On master:
+$ sudo kubeadm init --apiserver-advertise-address=172.31.27.252 --pod-network-cidr=192.168.0.0/16
+$ sudo kubeadm init --apiserver-advertise-address=172.31.27.252 --pod-network-cidr=192.168.0.0/16 --ignore-preflight-errors=NumCPU
+
+To run cluster as a non-root user:
+$   mkdir -p $HOME/.kube
+$   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$   sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+To join nodes to the cluster, copy the following command to node machine:
+$kubeadm join 172.31.27.252:6443 --token j3e3yv.fi8k40u515zndag0 \
+    --discovery-token-ca-cert-hash sha256:447f73715dd051226f7d2a3d0a8048a5b17feca96378c4ce80e6d0c3deafd81a 
+
+
+->$ kubectl get nodes
+nodes are in Not Reday state because the network plugin is not installed, run the following command to install network plugin
+->$ kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml
+->$ kubectl get pods --all-namespaces
+coreDNS pod comes in running state...now:
+->$ kubectl get nodes
+all the nodes are in ready state
+
+

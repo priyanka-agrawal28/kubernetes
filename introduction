@@ -1,0 +1,141 @@
+KUBERNETES
+
+-portable, extesible, open-source platform
+-manages containerized workloads and services
+-facilitates declarative configuration and automation
+-consists of a large, rapidly growing ecosystem
+-its services, sales and support are widely available
+-name originated from greek meaning helmsman or pilot
+-a project open-sourced by Google in 2014
+
+GOING BACK......
+
+->Traditional Deployment Era
+
+:earlier, organisations ran on physical servers
+:resource boundaries for applications could not be defined
+:caused resource allocation issues
+:instances took place where one application would take up most of the resources
+:other applications would underperform
+:solution was to run each application on a separate physical server
+:this solution was not feasible because resources were underutilized and it was too expensive
+
+->Virtualized Deployment Era
+
+:virtualization was introduced as a solution
+:multiple virtual machines could be run on a single physical server's CPU
+:allowed applications to be isolated between VMs 
+:provided a level of security
+:information of one application could not be freely accessed by another application
+:better utilisation of resources on a physical server
+:better scalability as applications could be added or updated easily
+:reduced hardware cost
+:presented a set of physical resources as a cluster of disposable virtual machines
+:every VM was a full machine running all the components including its own OS on top of virtualized h/w
+
+->Container Deployment Era
+
+:similar to VMs
+:have relaxed isolation properties
+:shares the operating system among the applications
+:containers are thus lightweight
+:has its own filesystem, memory, process space, cpu, etc
+:decoupled from the underlying infrastructure
+:portable across cloud and OS distributions
+:Benefits:-
+
+-agile application creation and deployment due to increased ease and efficiency of container image creation
+
+-provision of reliable and frequent container image build and deployment with quick and easy rollbacks leads to continuous development, integration and deployment
+
+-creation of application container images at build/release time rather than deployment time, thus decoupling applications from infrastructure and separating dev and ops
+
+-observability not only surfaces os level information and metrics but also application health and other signals
+
+-environmental consistency across development, testing and production
+
+-cloud and os distribution portability
+
+-application centric management as it raises the level of abstraction from running an os on virtual hardware to running an application on an os using logical resources
+
+-loosely coupled, distributed, elastic and liberated microservices
+
+-predictable application performance through resource isolation
+
+-high efficiency and density through resource utilization
+
+
+WHY KUBERNETES....???
+
+-containers tend to bundle and run your applications
+-in terms of production environment, there is a need to manage the containers that run the applications and ensure that there is no downtime
+-if a container goes down, another container needs to start
+-this is handled by a system known as kunernetes
+-it provides a framework to run distributed systems resiliently
+-takes care of scaling and failover for your application
+-provides deployment patterns
+-can easily manage canary deployment for the system
+
+Kubernetes provides:
+
+-Service discovery and load balancing
+	:can expose the container using the DNS name or their own IP
+	:can load balance and distribute the network traffic if traffic to a container is high for stable deployment
+
+-Storage orchestration
+	:allows us to automatically mount a storage system of our choice such as local storages, public cloud providers etc.
+
+-Automated rollouts and rollbacks
+	:describe the desired state for your deployed containers and kubernetes can change the actual state to desired state at a controlled rate
+	:can be automated to create new containers, remove existing ones and adopt all their resources to the new container
+
+-Automatic bin packing
+	:can fit containers onto the provided cluster of nodes according to the cpu and memory requirements to amke the best use of the resources
+
+-Self-healing
+	:restarts failed containers
+	:replaces and kills containers that don't respond to health checks
+	:these actions are not advertised to the clients untile containers are ready to serve
+
+-Secret and configuration management
+	:allows to store and manage sensitive information
+	:can deploy and update secrets and configurations without rebuilding container images
+	:doesn't expose secrets in the stack configuration
+
+
+WHAT KUBERNETES IS NOT....???
+
+-not a traditionally, all-inclusive PaaS system
+-operates at the container level rather than the hardware level
+-therefore, offers common PaaS offerings such as deployment, scaling, load balancing, logging and monitoring
+-but is not monolithic->these default offerings are optional and pluggable
+-provides the building blocks for building developer platforms
+-preserves user choice and flexibility where important
+
+KUBERNETES:
+
+-does not limit the type of applications supported
+-supports variety of workloads, be it, stateless, stateful or data processing workloads
+-if an application runs on a container, it should run great on kunernetes
+
+-does not deploy source code and does not build your application
+
+-does not provide application level services: middleware, data processing frameworks, databases, caches, cluster storage systems :as built-in services
+-these can be run on kubernetes or accessed by applications running on kubernetesthrough portable mechanisms
+
+-does not only dictate logging, monitoring or alerting solutions
+-provides some integrations as proof of concept and mechanisms to collect and export metrics
+
+-does not provide/mandate a configuration language/system
+-provides a declarative API that can be targeted by arbitrary forms of declarative specifications
+
+-does not provide/adopt any specific machine configuration, maintenance, management or self-healing systems
+
+-not a mere orchestration system
+-eliminates the need for orchestration
+-orchestration is defined as execution of a defined workflow: A->B->C
+-while kubernetes comprises a set of independent, composable control processes that just continuously drives the current state towards the desired state
+-doesn't matter how you get from A to C
+-centarlized control not required
+
+-thus kubernetes is easier to use, more powerful, robust, resilient and extensible

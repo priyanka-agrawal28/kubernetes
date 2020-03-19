@@ -1,0 +1,197 @@
+WHAT CAN KUBERNETES DO ??
+
+-users expect applications to be available 24/7
+-developers expect to deploy new versions of those applications every now and then
+-containerization helps package softwares to enable them to be released and updated in an easy and fast way without downtime
+-kubernetes makes sure that these containerized applications run where and when we want, helps them find resources and tools they need to work
+-kubernetes is an open-source, production-ready platform
+
+CREATE A NEW CLUSTER
+
+->KUBERNETES CLUSTERS
+
+-coordination of a highly available cluster of computers that are connected to work as a single unit
+-deployment of containerized applications to a cluster without tying them specifically to individual machines
+-applications are therefore containerized to make sure that they are decoupled from individual hosts
+-containerized applications are thus more flexible and available
+-automation of distribution and scheduling of application containers across a cluster efficiently
+-open-source and production-ready
+-orchestration of scheduling and distribution of application containers across clusters of computers
+
+-Kubernetes cluster consists:
+	:master= which coordinates the cluster
+	:nodes= workers which run the applications
+
+->MASTER is responsible for managing the cluster
+-coordinates all the activities of the cluster
+-scheduling and distribution of application containers, maintenance of applications' desired state, scaling of applications and rolling out new updates and releases
+
+->NODE is a VM or physical computer 
+-serves as a worker machine in the cluster
+-each node has a KUBELET (agent for managing the node and communicating with the master)
+-should have tools like docker for managing container operations
+-cluster handling production traffic should have minimum of three nodes
+
+->PROCESS:
+-deployment of applications on kubernetes indicates that the master should start the application containers
+-master then schedules the containers to run on cluster's nodes
+-nodes communicate with the master through kubernetes API
+-this API is exposed by the master
+-it can also be used by and users to interact directly eith the cluster
+-cluster can be deployed on physical as well as virtual machines
+-minikube can be used which is a lightweight kubernetes implementation that creates a VM on local machine and deploys a cluster containing one node
+
+
+DEPLOY AN APP
+
+->KUBERNETES DEPLOYMENTS
+
+-containerized applications can be deployed on top of a running cluster
+-need to create a kubernetes deployment configuration
+-this deployment instructs kubernetes on how to create and update the instances of the application
+-after the deployment is created, scheduling of the application instances onto individual nodes is done by the master
+-after the creation of application instances, monitoring of those instances is done by the deployment controller
+-deployment controller replaces an instance with the instance on another node if a node hosting the instance goes down or is deleted
+-thsu, self-healing mechanism is provided 
+-machine failures and maintenance are also addressed properly
+-installation scripts were used in the pre-orchestration world to start the applications that did not support recovery on application failure
+-thus, a different approach is followed by kubernetes for application management
+
+->KUBECTL
+
+-kubernetes CLI used to create and manage a deployment
+-uses the kubernetes API to interact with the cluster
+
+-while creating a deployment, you need to specify the container image for application and the number of replicas you want to run
+-deployment can be updated later to change this information
+
+
+VIEWING PODS AND NODES
+
+->KUBERNETES PODS
+
+-on creation of deployment, kubernetes creates a pod to host your application instance
+-a kuberenetes abstraction
+-represents a group of one or more application containers and their shared resources:
+	:shared storage as volumes
+	:networking as cluster IP address
+	:information about how to run each container such a sits version or specific ports
+-models an application specific logical host
+-can contain a single application container or different application containers which are tightly coupled and share the same resources
+-eg: node.js app container + a database container = a pod inside a node
+-containers inside a pod share the same ip address and port space, are co-located and co-scheduled, and run in a shared context on the same node
+-atomic unit on kubernetes platform
+-when we create a deployment, then as opposed to creating containers directly, deployment creates pods with containers inside them
+-every pod is tied to the node where it is scheduled and remains there until termination or deletion
+-on node failures, identical pods are scheduled on other nodes available in the cluster
+
+->NODES
+
+-pod always runs on a node
+-a worker machine in kubernetes
+-managed by the master
+-can have multiple pods whose scheduling across the nodes is automatically handled by the master
+-available resources on each node are taken into account while automatic scheduling is done
+-every node runs:
+	:kubelet= process responsible for communication between master and node, also manages the pods and containers running on machine
+	:a container runtime like docker or rkt for pulling the container image, unpacking the container and running the application
+
+-Containers should only be scheduled together in a single Pod if they are tightly coupled and need to share resources such as disk.
+
+->KUBECTL COMMANDS
+
+-kubectl get - list resources
+-kubectl describe - show detailed information about a resource
+-kubectl logs - print the logs from a container in a pod
+-kubectl exec - execute a command on a container in a pod
+
+
+OVERVIEW OF KUBERNETES SERVICES
+
+-pods are mortal
+-pods have lifecycle
+-when a node dies, pods inside that node also get lost
+-replicaset then dynamically drives the cluster back to desired state via creation of new pods to keep the application running
+-suppose there is an image processing backend with 3 replicas..these replicas are exchangeable
+-front end system does not care about backend replicas and if the pod is lost and recreated
+-each pod in a cluster, even on the same node, has a unique IP address
+-thus, changes among pods are automatically reconciled so that the applications continue to function
+
+
+->SERVICES
+
+-abstraction which define the logical set of pods and a policy to access them
+-enables external traffic exposure, load balancing and service discovery for those pods
+-enables a loose coupling between dependent pods
+-defined using YAML or JSON like all kubernetes objects
+-set of pods targeted by a service is defined using LabelSelector
+-IPs of each pod is not exposed outside the cluster without a service
+-services allow the applications to receive traffic
+-specification of a type lets you expose services in different ways:
+	::ClusterIP
+	-exposes the service on an internal IP in the cluster
+	-makes the service only reachable from within the cluster
+	
+	::NodePort
+	-exposes service on the same port of every selected node using NAT
+	-makes a service accessible from outside the cluster (NodeIP:NodePort)
+	-superset of clusterIP
+	
+	::LoadBalancer
+	-creates an external load balancer in the current cloud
+	-assigns a fixed, external IP to the service
+	-superset of NodePort
+	
+	::ExternalName
+	-exposes the service using an arbitrary name
+	-returns a CNAME record
+	-no proxy is used
+	-requires kube-dns v1.7 or higher	
+
+-sevice created without selector will also not create the corresponding endpoints objects
+-this allows users to manually map a service to specific endpoints
+
+-service also routes traffic across a set of pods
+-allow pods to die and replicate in kubernetes without impacting the application
+-handles the discovery and routing among dependent pods
+-matches a set of pods using labels and selectors(a grouping primitive that allows logical operation on objects, labels are key/value pairs attached to objects and used in number of ways: designation of objects for dev, test or prod, embedding version tags, classifying an object using tags)
+
+- use --expose in kubectl to create a service at the same time of creating a deployment
+- labels can be attached to objects at creation time or later on and modified at any time
+
+
+SCALING AN APPLICATION
+
+-with the increase in traffic, the need to scale the applicationto keep up with the user demand also increases
+-scaling is accomplished by changing the number of replicas in a deployment
+-a deployment with multiple instances can be created by using  --replicas parameter in kubectl run command
+-ensures that new pods are created and scheduled to nodes with available resources
+-increases the number of pods to the new desired state
+-suports autoscaling of pods too
+-scaling to zero is also possible by terminating all pods of the deployment
+-consists of an integrated load balancer that will distribute network between multiple instances of an application to all pods of an exposed deployment
+-running pods are monitored continuously using services->ensures that the traffic is sent only to available pods
+-rolling updates can be done easily without downtime
+
+
+PERFORMING A ROLLING UPDATE
+
+->UPDATING AN APPLICATION
+
+-users expect applications to be available all the time
+-developers are expected to deploy new versions of applications every noe and then
+-this is achieved through rolling updates
+-allows deployments' updates to take place with zero downtime
+-incrementally updates pods instances with the new ones
+-new pods are scheduled on nodes with available resources
+-scaling of application is required to perform updates without affecting the availability of applications
+-max no. of pods that can be unavailable during an update and max no. of new pods that can be created is 1
+-updates are versioned in kubernetes
+-any deployment update can be reverted back to a previous or stable version
+-if a deployment is exposed publicly as in application scaling, service will itself load balance the traffic only to available pods during the update
+-available pod refers to an instance that is available to users of the application
+
+-Rolling updates allow:
+	:promoting an application from one environment to other
+	:rolling back to previous versions
+	:CI/CD of applications with zero downtime
